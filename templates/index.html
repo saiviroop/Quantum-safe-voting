@@ -1,0 +1,235 @@
+<!-- =========================================================================
+     QUANTUM-SAFE E-VOTING SYSTEM - HOME PAGE
+     =========================================================================
+     File: templates/index.html
+     Purpose: Landing page with welcome message and system info
+     ========================================================================= -->
+{% extends "base.html" %}
+
+{% block title %}Home - Quantum-Safe Voting{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="row">
+    <div class="col-lg-8 mx-auto text-center">
+        <!-- Welcome Header -->
+        <div class="hero-section">
+            <h1 class="display-4 fw-bold text-primary mb-3">
+                <i class="bi bi-shield-lock-fill"></i>
+                Welcome to Quantum-Safe Voting
+            </h1>
+            <p class="lead text-muted mb-4">
+                The future of secure, anonymous, and verifiable electronic voting
+            </p>
+        </div>
+        
+        <!-- Voting Status Badge -->
+        <div class="mb-4">
+            {% if voting_open %}
+                <span class="badge bg-success p-3 fs-5">
+                    <i class="bi bi-unlock-fill"></i> Voting is Open
+                </span>
+            {% else %}
+                <span class="badge bg-danger p-3 fs-5">
+                    <i class="bi bi-lock-fill"></i> Voting is Closed
+                </span>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="row g-4 my-5">
+    <!-- Feature 1: Quantum-Safe -->
+    <div class="col-md-4">
+        <div class="card h-100 border-primary">
+            <div class="card-body text-center">
+                <div class="feature-icon">
+                    <i class="bi bi-cpu text-primary"></i>
+                </div>
+                <h4 class="card-title">Quantum-Safe</h4>
+                <p class="card-text text-muted">
+                    Protected by NIST-approved post-quantum cryptography: 
+                    Kyber-512 for encryption and Dilithium-2 for signatures.
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Feature 2: Anonymous -->
+    <div class="col-md-4">
+        <div class="card h-100 border-success">
+            <div class="card-body text-center">
+                <div class="feature-icon">
+                    <i class="bi bi-incognito text-success"></i>
+                </div>
+                <h4 class="card-title">Anonymous</h4>
+                <p class="card-text text-muted">
+                    Your vote is completely anonymous. No link exists between 
+                    your identity and your vote choice.
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Feature 3: Verifiable -->
+    <div class="col-md-4">
+        <div class="card h-100 border-info">
+            <div class="card-body text-center">
+                <div class="feature-icon">
+                    <i class="bi bi-check-circle text-info"></i>
+                </div>
+                <h4 class="card-title">Verifiable</h4>
+                <p class="card-text text-muted">
+                    Receive a cryptographic receipt to verify your vote was 
+                    recorded correctly and hasn't been tampered with.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics Section -->
+{% if stats %}
+<div class="row my-5">
+    <div class="col-lg-8 mx-auto">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    <i class="bi bi-graph-up"></i> Election Statistics
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-3">
+                        <div class="stat-box">
+                            <h3 class="text-primary">{{ stats.total_users }}</h3>
+                            <p class="text-muted mb-0">Registered Voters</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-box">
+                            <h3 class="text-success">{{ stats.total_votes }}</h3>
+                            <p class="text-muted mb-0">Votes Cast</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-box">
+                            <h3 class="text-info">{{ stats.total_candidates }}</h3>
+                            <p class="text-muted mb-0">Candidates</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-box">
+                            <h3 class="text-warning">{{ "%.1f"|format(stats.participation_rate) }}%</h3>
+                            <p class="text-muted mb-0">Participation</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Call to Action -->
+<div class="row my-5">
+    <div class="col-lg-6 mx-auto text-center">
+        <div class="card bg-light">
+            <div class="card-body p-4">
+                {% if session.user_id %}
+                    <!-- User is logged in -->
+                    <h4 class="mb-3">Ready to vote?</h4>
+                    <a href="{{ url_for('vote_page') }}" class="btn btn-primary btn-lg">
+                        <i class="bi bi-check-circle"></i> Cast Your Vote
+                    </a>
+                {% elif session.admin_id %}
+                    <!-- Admin is logged in -->
+                    <h4 class="mb-3">Admin Panel</h4>
+                    <a href="{{ url_for('admin_dashboard') }}" class="btn btn-primary btn-lg">
+                        <i class="bi bi-gear"></i> Go to Dashboard
+                    </a>
+                {% else %}
+                    <!-- Not logged in -->
+                    <h4 class="mb-3">Get Started</h4>
+                    <p class="text-muted mb-4">
+                        New here? Register to participate in the election.
+                    </p>
+                    <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                        <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg px-4">
+                            <i class="bi bi-person-plus"></i> Register
+                        </a>
+                        <a href="{{ url_for('login') }}" class="btn btn-outline-primary btn-lg px-4">
+                            <i class="bi bi-box-arrow-in-right"></i> Login
+                        </a>
+                    </div>
+                    <div class="mt-4">
+                        <p class="small text-muted">
+                            Already voted? 
+                            <a href="{{ url_for('verify') }}" class="text-decoration-none">
+                                Verify your vote
+                            </a>
+                        </p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- How it Works Section -->
+<div class="row my-5">
+    <div class="col-lg-10 mx-auto">
+        <h3 class="text-center mb-4">How It Works</h3>
+        <div class="row g-3">
+            <div class="col-md-3">
+                <div class="step-box">
+                    <div class="step-number">1</div>
+                    <h6>Register</h6>
+                    <p class="small text-muted">Create your voter account</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="step-box">
+                    <div class="step-number">2</div>
+                    <h6>Vote</h6>
+                    <p class="small text-muted">Select your candidate</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="step-box">
+                    <div class="step-number">3</div>
+                    <h6>Receipt</h6>
+                    <p class="small text-muted">Get your verification code</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="step-box">
+                    <div class="step-number">4</div>
+                    <h6>Verify</h6>
+                    <p class="small text-muted">Confirm vote recorded</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Security Info -->
+<div class="row my-5">
+    <div class="col-lg-8 mx-auto">
+        <div class="alert alert-info">
+            <h5 class="alert-heading">
+                <i class="bi bi-info-circle-fill"></i> Security Information
+            </h5>
+            <hr>
+            <ul class="mb-0">
+                <li><strong>Encryption:</strong> All votes encrypted with Kyber-512 (NIST post-quantum standard)</li>
+                <li><strong>Signatures:</strong> Digital signatures using Dilithium-2 prevent tampering</li>
+                <li><strong>Anonymity:</strong> Zero link between voter identity and vote content</li>
+                <li><strong>One Vote:</strong> System ensures each voter can only vote once</li>
+                <li><strong>Verification:</strong> Cryptographic receipts allow vote verification</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

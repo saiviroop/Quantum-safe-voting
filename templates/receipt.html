@@ -1,0 +1,152 @@
+<!-- =========================================================================
+     QUANTUM-SAFE E-VOTING SYSTEM - RECEIPT PAGE
+     =========================================================================
+     File: templates/receipt.html
+     Purpose: Display vote receipt with verification code
+     ========================================================================= -->
+{% extends "base.html" %}
+
+{% block title %}Vote Receipt - Quantum-Safe Voting{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-6 mx-auto">
+        <!-- Success Message -->
+        <div class="text-center mb-4">
+            <div class="success-icon">
+                <i class="bi bi-check-circle-fill text-success"></i>
+            </div>
+            <h2 class="display-5 fw-bold text-success mt-3">
+                Vote Submitted Successfully!
+            </h2>
+            <p class="lead text-muted">
+                Your vote has been encrypted and recorded
+            </p>
+        </div>
+        
+        <!-- Receipt Card -->
+        <div class="card shadow-lg border-success">
+            <div class="card-header bg-success text-white text-center">
+                <h4 class="mb-0">
+                    <i class="bi bi-receipt"></i> Your Vote Receipt
+                </h4>
+            </div>
+            <div class="card-body p-4">
+                <!-- Receipt Code Display -->
+                <div class="receipt-code-box">
+                    <p class="text-center text-muted mb-2">
+                        <strong>RECEIPT CODE</strong>
+                    </p>
+                    <div class="receipt-code" id="receiptCode">
+                        {{ receipt_code }}
+                    </div>
+                    <div class="text-center mt-3">
+                        <button 
+                            class="btn btn-outline-primary btn-sm" 
+                            onclick="copyReceiptCode()"
+                            id="copyBtn">
+                            <i class="bi bi-clipboard"></i> Copy Code
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Receipt Details -->
+                <div class="receipt-details mt-4">
+                    <div class="row">
+                        <div class="col-6">
+                            <p class="text-muted small mb-1">Timestamp</p>
+                            <p class="fw-bold">{{ timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+                        </div>
+                        <div class="col-6">
+                            <p class="text-muted small mb-1">Status</p>
+                            <p class="fw-bold text-success">
+                                <i class="bi bi-check-circle-fill"></i> Verified
+                            </p>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-6">
+                            <p class="text-muted small mb-1">Encryption</p>
+                            <p class="fw-bold small">Kyber-512</p>
+                        </div>
+                        <div class="col-6">
+                            <p class="text-muted small mb-1">Signature</p>
+                            <p class="fw-bold small">Dilithium-2</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Important Notice -->
+                <div class="alert alert-warning mt-4">
+                    <h6 class="alert-heading">
+                        <i class="bi bi-exclamation-triangle-fill"></i> Important!
+                    </h6>
+                    <ul class="mb-0 small">
+                        <li><strong>Save this code</strong> - you cannot retrieve it later</li>
+                        <li>Use it to verify your vote was recorded correctly</li>
+                        <li>Keep it private - don't share with others</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card-footer bg-light">
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('verify') }}" class="btn btn-primary">
+                        <i class="bi bi-search"></i> Verify This Vote Now
+                    </a>
+                    <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+                        <i class="bi bi-house"></i> Return to Home
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- What's Next -->
+        <div class="card mt-4">
+            <div class="card-body">
+                <h6 class="card-title">
+                    <i class="bi bi-question-circle"></i> What happens next?
+                </h6>
+                <ol class="small mb-0">
+                    <li>Your vote is stored encrypted in the database</li>
+                    <li>Only the admin can decrypt votes during tallying</li>
+                    <li>Your identity is never linked to your vote</li>
+                    <li>Use your receipt code anytime to verify your vote</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Copy receipt code to clipboard
+function copyReceiptCode() {
+    const receiptCode = document.getElementById('receiptCode').textContent.trim();
+    const copyBtn = document.getElementById('copyBtn');
+    
+    // Use Clipboard API
+    navigator.clipboard.writeText(receiptCode).then(function() {
+        // Success feedback
+        copyBtn.innerHTML = '<i class="bi bi-check"></i> Copied!';
+        copyBtn.classList.remove('btn-outline-primary');
+        copyBtn.classList.add('btn-success');
+        
+        // Reset after 2 seconds
+        setTimeout(function() {
+            copyBtn.innerHTML = '<i class="bi bi-clipboard"></i> Copy Code';
+            copyBtn.classList.remove('btn-success');
+            copyBtn.classList.add('btn-outline-primary');
+        }, 2000);
+    }).catch(function(err) {
+        // Fallback for older browsers
+        alert('Receipt Code: ' + receiptCode + '\n\nPlease copy this code manually.');
+    });
+}
+
+// Add animation on page load
+window.addEventListener('load', function() {
+    document.querySelector('.receipt-code-box').classList.add('animate-in');
+});
+</script>
+{% endblock %}

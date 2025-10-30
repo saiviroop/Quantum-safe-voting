@@ -1,0 +1,450 @@
+/* ==========================================================================
+   QUANTUM-SAFE E-VOTING SYSTEM - CUSTOM STYLES
+   ==========================================================================
+   File: static/css/style.css
+   Purpose: Custom CSS styles for modern, beautiful UI
+   ========================================================================== */
+
+/* ==========================================================================
+   GLOBAL STYLES
+   ========================================================================== */
+
+:root {
+    --primary-color: #2563eb;
+    --success-color: #10b981;
+    --danger-color: #ef4444;
+    --warning-color: #f59e0b;
+    --info-color: #3b82f6;
+    --light-bg: #f9fafb;
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--light-bg);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
+/* ==========================================================================
+   HERO SECTION
+   ========================================================================== */
+
+.hero-section {
+    padding: 2rem 0;
+    animation: fadeIn 0.8s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ==========================================================================
+   FEATURE CARDS
+   ========================================================================== */
+
+.feature-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.card {
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: none;
+    box-shadow: var(--shadow);
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+/* ==========================================================================
+   STATISTICS
+   ========================================================================== */
+
+.stat-box {
+    padding: 1rem;
+}
+
+.stat-box h3 {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.stat-card {
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: var(--shadow);
+    transition: transform 0.2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+}
+
+.stat-card .stat-icon {
+    font-size: 3rem;
+    opacity: 0.8;
+}
+
+.stat-card .stat-content h3 {
+    font-size: 2rem;
+    margin-bottom: 0.25rem;
+    font-weight: bold;
+}
+
+.stat-card .stat-content p {
+    font-size: 0.875rem;
+    opacity: 0.9;
+}
+
+/* ==========================================================================
+   STEP BOXES (How It Works)
+   ========================================================================== */
+
+.step-box {
+    text-align: center;
+    padding: 1.5rem;
+    background: white;
+    border-radius: 0.5rem;
+    box-shadow: var(--shadow);
+    transition: all 0.3s;
+}
+
+.step-box:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+}
+
+.step-number {
+    width: 50px;
+    height: 50px;
+    background: var(--primary-color);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin: 0 auto 1rem;
+}
+
+/* ==========================================================================
+   CANDIDATE SELECTION (VOTING PAGE)
+   ========================================================================== */
+
+.candidates-list {
+    max-height: 600px;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+}
+
+.candidate-card {
+    transition: all 0.2s;
+}
+
+.candidate-label {
+    display: block;
+    padding: 1.5rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: white;
+}
+
+.candidate-label:hover {
+    border-color: var(--primary-color);
+    background: #f0f9ff;
+    transform: translateX(5px);
+}
+
+.btn-check:checked + .candidate-label {
+    border-color: var(--success-color);
+    background: #ecfdf5;
+    box-shadow: var(--shadow);
+}
+
+.candidate-avatar {
+    font-size: 3rem;
+    color: var(--primary-color);
+    margin-right: 1rem;
+}
+
+.candidate-name {
+    font-size: 1.25rem;
+    color: #1f2937;
+    margin-bottom: 0.25rem;
+}
+
+.candidate-party {
+    color: #6b7280;
+    font-size: 0.95rem;
+}
+
+.candidate-description {
+    margin-top: 0.5rem;
+    line-height: 1.5;
+}
+
+.check-icon {
+    font-size: 2rem;
+    color: var(--success-color);
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.btn-check:checked + .candidate-label .check-icon {
+    opacity: 1;
+}
+
+/* ==========================================================================
+   RECEIPT CODE DISPLAY
+   ========================================================================== */
+
+.success-icon {
+    font-size: 5rem;
+    color: var(--success-color);
+    animation: scaleIn 0.5s ease-out;
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.receipt-code-box {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 2rem;
+    border-radius: 0.5rem;
+    box-shadow: var(--shadow-lg);
+}
+
+.receipt-code {
+    font-size: 2rem;
+    font-weight: bold;
+    font-family: 'Courier New', monospace;
+    letter-spacing: 0.2em;
+    text-align: center;
+    color: white;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 0.25rem;
+    user-select: all;
+}
+
+.receipt-details {
+    background: #f9fafb;
+    padding: 1rem;
+    border-radius: 0.5rem;
+}
+
+/* ==========================================================================
+   FORMS
+   ========================================================================== */
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.25);
+}
+
+.btn {
+    transition: all 0.2s;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+/* ==========================================================================
+   NAVBAR
+   ========================================================================== */
+
+.navbar {
+    box-shadow: var(--shadow);
+}
+
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.25rem;
+}
+
+.navbar-brand i {
+    margin-right: 0.5rem;
+}
+
+/* ==========================================================================
+   ALERTS
+   ========================================================================== */
+
+.alert {
+    border: none;
+    border-left: 4px solid;
+}
+
+.alert-success {
+    border-left-color: var(--success-color);
+    background: #ecfdf5;
+    color: #065f46;
+}
+
+.alert-danger {
+    border-left-color: var(--danger-color);
+    background: #fef2f2;
+    color: #991b1b;
+}
+
+.alert-warning {
+    border-left-color: var(--warning-color);
+    background: #fffbeb;
+    color: #92400e;
+}
+
+.alert-info {
+    border-left-color: var(--info-color);
+    background: #eff6ff;
+    color: #1e40af;
+}
+
+/* ==========================================================================
+   FOOTER
+   ========================================================================== */
+
+footer {
+    margin-top: auto;
+    border-top: 1px solid #e5e7eb;
+}
+
+/* ==========================================================================
+   ANIMATIONS
+   ========================================================================== */
+
+.animate-in {
+    animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN
+   ========================================================================== */
+
+@media (max-width: 768px) {
+    .receipt-code {
+        font-size: 1.5rem;
+        letter-spacing: 0.1em;
+    }
+    
+    .candidate-label {
+        padding: 1rem;
+    }
+    
+    .candidate-avatar {
+        font-size: 2rem;
+    }
+    
+    .stat-card {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+
+/* ==========================================================================
+   UTILITY CLASSES
+   ========================================================================== */
+
+.shadow {
+    box-shadow: var(--shadow) !important;
+}
+
+.shadow-lg {
+    box-shadow: var(--shadow-lg) !important;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+/* ==========================================================================
+   SCROLLBAR STYLING
+   ========================================================================== */
+
+.candidates-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+.candidates-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.candidates-list::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+
+.candidates-list::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* ==========================================================================
+   PRINT STYLES (FOR RECEIPT)
+   ========================================================================== */
+
+@media print {
+    .navbar,
+    footer,
+    .btn,
+    .alert {
+        display: none !important;
+    }
+    
+    .receipt-code-box {
+        background: white !important;
+        border: 2px solid black;
+    }
+    
+    .receipt-code {
+        color: black !important;
+    }
+}

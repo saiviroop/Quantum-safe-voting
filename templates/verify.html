@@ -1,0 +1,197 @@
+<!-- =========================================================================
+     QUANTUM-SAFE E-VOTING SYSTEM - VERIFICATION PAGE
+     =========================================================================
+     File: templates/verify.html
+     Purpose: Verify vote using receipt code
+     ========================================================================= -->
+{% extends "base.html" %}
+
+{% block title %}Verify Vote - Quantum-Safe Voting{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-6 mx-auto">
+        <!-- Page Header -->
+        <div class="text-center mb-4">
+            <h2 class="display-5 fw-bold text-primary">
+                <i class="bi bi-search"></i> Verify Your Vote
+            </h2>
+            <p class="lead text-muted">
+                Enter your receipt code to verify your vote was recorded
+            </p>
+        </div>
+        
+        <!-- Verification Form -->
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    <i class="bi bi-shield-check"></i> Vote Verification
+                </h5>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST" action="{{ url_for('verify') }}">
+                    <!-- Receipt Code Input -->
+                    <div class="mb-4">
+                        <label for="receipt_code" class="form-label">
+                            <strong>Receipt Code</strong>
+                        </label>
+                        <input 
+                            type="text" 
+                            class="form-control form-control-lg text-center" 
+                            id="receipt_code" 
+                            name="receipt_code" 
+                            placeholder="Enter 12-character code"
+                            maxlength="12"
+                            style="letter-spacing: 0.2em; font-family: monospace;"
+                            required
+                            autofocus>
+                        <div class="form-text text-center">
+                            Example: A1B2C3D4E5F6
+                        </div>
+                    </div>
+                    
+                    <!-- Submit Button -->
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-check-circle"></i> Verify Vote
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        {% if verified is not none %}
+            {% if verified %}
+                <!-- Verification Success -->
+                <div class="card mt-4 border-success">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-check-circle-fill"></i> Verification Successful
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-success mb-3">
+                            <h6 class="alert-heading">
+                                <i class="bi bi-shield-check"></i> Vote Verified!
+                            </h6>
+                            <p class="mb-0">
+                                Your vote has been successfully verified. The cryptographic 
+                                signature is valid, confirming your vote has not been tampered with.
+                            </p>
+                        </div>
+                        
+                        <!-- Vote Details -->
+                        <h6 class="mb-3">Vote Details:</h6>
+                        <div class="row">
+                            <div class="col-6">
+                                <p class="text-muted small mb-1">Receipt Code</p>
+                                <p class="fw-bold small" style="font-family: monospace;">
+                                    {{ receipt_code }}
+                                </p>
+                            </div>
+                            <div class="col-6">
+                                <p class="text-muted small mb-1">Timestamp</p>
+                                <p class="fw-bold small">
+                                    {{ vote.timestamp }}
+                                </p>
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-6">
+                                <p class="text-muted small mb-1">Encryption</p>
+                                <p class="fw-bold small">
+                                    <i class="bi bi-lock-fill text-success"></i> Kyber-512
+                                </p>
+                            </div>
+                            <div class="col-6">
+                                <p class="text-muted small mb-1">Signature Status</p>
+                                <p class="fw-bold small">
+                                    <i class="bi bi-check-circle-fill text-success"></i> Valid
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <!-- Technical Details (Optional) -->
+                        <div class="mt-3">
+                            <button 
+                                class="btn btn-sm btn-outline-secondary" 
+                                type="button" 
+                                data-bs-toggle="collapse" 
+                                data-bs-target="#technicalDetails">
+                                <i class="bi bi-info-circle"></i> Show Technical Details
+                            </button>
+                            <div class="collapse mt-2" id="technicalDetails">
+                                <div class="card card-body small bg-light">
+                                    <p class="mb-1">
+                                        <strong>Kyber Ciphertext Size:</strong> 
+                                        {{ vote.kyber_ciphertext|length }} bytes
+                                    </p>
+                                    <p class="mb-1">
+                                        <strong>Encrypted Data Size:</strong> 
+                                        {{ vote.encrypted_data|length }} bytes
+                                    </p>
+                                    <p class="mb-0">
+                                        <strong>Signature Size:</strong> 
+                                        {{ vote.signature|length }} bytes
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <!-- Verification Failed -->
+                <div class="card mt-4 border-danger">
+                    <div class="card-header bg-danger text-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-x-circle-fill"></i> Verification Failed
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-danger">
+                            <h6 class="alert-heading">
+                                <i class="bi bi-exclamation-triangle-fill"></i> Invalid Signature
+                            </h6>
+                            <p class="mb-0">
+                                The cryptographic signature for receipt code 
+                                <strong>{{ receipt_code }}</strong> could not be verified. 
+                                This may indicate the vote has been tampered with.
+                            </p>
+                        </div>
+                        <p class="text-muted small mb-0">
+                            If you believe this is an error, please contact the election administrator.
+                        </p>
+                    </div>
+                </div>
+            {% endif %}
+        {% endif %}
+        
+        <!-- Information Card -->
+        <div class="card mt-4">
+            <div class="card-body">
+                <h6 class="card-title">
+                    <i class="bi bi-info-circle"></i> About Vote Verification
+                </h6>
+                <p class="small mb-2">
+                    Vote verification uses quantum-safe cryptography to ensure:
+                </p>
+                <ul class="small mb-0">
+                    <li><strong>Authenticity:</strong> The vote came from our system</li>
+                    <li><strong>Integrity:</strong> The vote hasn't been modified</li>
+                    <li><strong>Privacy:</strong> Your vote content remains encrypted</li>
+                    <li><strong>Anonymity:</strong> No link between your identity and vote</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Auto-uppercase receipt code input
+document.getElementById('receipt_code').addEventListener('input', function(e) {
+    this.value = this.value.toUpperCase();
+});
+</script>
+{% endblock %}

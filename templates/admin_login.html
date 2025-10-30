@@ -1,0 +1,92 @@
+<!-- =========================================================================
+     QUANTUM-SAFE E-VOTING SYSTEM - ADMIN LOGIN PAGE
+     =========================================================================
+     File: templates/admin_login.html
+     Purpose: Admin authentication (separate from regular users)
+     ========================================================================= -->
+{% extends "base.html" %}
+
+{% block title %}Admin Login - Quantum-Safe Voting{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-5 col-lg-4 mx-auto">
+        <!-- Admin Login Card -->
+        <div class="card shadow border-danger">
+            <div class="card-header bg-danger text-white">
+                <h4 class="mb-0">
+                    <i class="bi bi-shield-lock-fill"></i> Admin Access
+                </h4>
+            </div>
+            <div class="card-body p-4">
+                <div class="alert alert-warning small">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    <strong>Restricted Area:</strong> Authorized personnel only
+                </div>
+                
+                <!-- Admin Login Form -->
+                <form method="POST" action="{{ url_for('admin_login') }}">
+                    <!-- Username Field -->
+                    <div class="mb-3">
+                        <label for="username" class="form-label">
+                            <i class="bi bi-person-badge"></i> Admin Username
+                        </label>
+                        <input 
+                            type="text" 
+                            class="form-control form-control-lg" 
+                            id="username" 
+                            name="username" 
+                            placeholder="Enter admin username"
+                            required
+                            autofocus>
+                    </div>
+                    
+                    <!-- Password Field -->
+                    <div class="mb-4">
+                        <label for="password" class="form-label">
+                            <i class="bi bi-lock-fill"></i> Admin Password
+                        </label>
+                        <input 
+                            type="password" 
+                            class="form-control form-control-lg" 
+                            id="password" 
+                            name="password" 
+                            placeholder="Enter admin password"
+                            required>
+                    </div>
+                    
+                    <!-- Submit Button -->
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-danger btn-lg">
+                            <i class="bi bi-shield-check"></i> Admin Login
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer text-center bg-light">
+                <p class="mb-0 small">
+                    <a href="{{ url_for('login') }}" class="text-muted text-decoration-none">
+                        <i class="bi bi-arrow-left"></i> Back to Voter Login
+                    </a>
+                </p>
+            </div>
+        </div>
+        
+        <!-- Default Credentials Info (Development Only) -->
+        <div class="card mt-3 bg-light">
+            <div class="card-body">
+                <h6 class="card-title small">
+                    <i class="bi bi-info-circle"></i> Default Credentials
+                </h6>
+                <p class="small mb-0">
+                    <strong>Username:</strong> admin<br>
+                    <strong>Password:</strong> admin123
+                </p>
+                <p class="small text-danger mb-0 mt-2">
+                    ⚠ Change this in production!
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

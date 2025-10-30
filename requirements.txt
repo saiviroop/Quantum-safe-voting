@@ -1,0 +1,130 @@
+# ============================================================================
+# QUANTUM-SAFE E-VOTING SYSTEM - DEPENDENCIES (WITH FACE RECOGNITION)
+# ============================================================================
+# File: requirements.txt
+# Purpose: Python package dependencies for the voting system
+# 
+# Installation: pip install -r requirements.txt
+# Python Version: 3.11+
+# Platform: Windows 11, Linux, macOS
+# ============================================================================
+
+# Web Framework
+# -------------
+Flask==3.0.0
+Werkzeug==3.0.1
+
+# Quantum-Safe Cryptography
+# --------------------------
+# liboqs-python: Real post-quantum cryptography (Kyber-512 + ML-DSA-44)
+liboqs-python==0.14.1
+
+# Classical Cryptography
+# -----------------------
+# Used for AES-GCM encryption, key derivation
+cryptography==41.0.7
+
+# Password Hashing
+# ----------------
+bcrypt==4.1.2
+
+# ============================================================================
+# FACIAL RECOGNITION SYSTEM (NEW!)
+# ============================================================================
+
+# DeepFace: Easy-to-install face recognition library
+# Works on Windows without C++ compiler!
+# Automatically downloads AI models (~100MB) on first use
+deepface==0.0.79
+
+# TensorFlow: Deep learning framework (DeepFace dependency)
+# Using CPU version for easier installation on Windows
+tensorflow==2.15.0
+
+# OpenCV: Computer vision library for image/video processing
+opencv-python==4.8.1.78
+
+# Image Processing
+Pillow==10.1.0
+
+# Numerical Operations
+numpy==1.24.3
+
+# ============================================================================
+# INSTALLATION INSTRUCTIONS:
+# ============================================================================
+# 
+# STEP 1: Upgrade pip (recommended)
+#   python -m pip install --upgrade pip
+# 
+# STEP 2: Install all dependencies
+#   pip install -r requirements.txt
+# 
+# STEP 3: Wait for installation (5-10 minutes)
+#   - Total download size: ~600MB
+#   - Includes TensorFlow, DeepFace, OpenCV
+#   - Face detection models downloaded on first use
+# 
+# OPTIONAL: Install TensorFlow CPU-only (faster install)
+#   pip uninstall tensorflow
+#   pip install tensorflow-cpu==2.15.0
+# 
+# ============================================================================
+# PACKAGE SIZES:
+# ============================================================================
+# 
+# Flask + dependencies:        ~5MB
+# liboqs-python:               ~2MB
+# cryptography:                ~3MB
+# bcrypt:                      ~1MB
+# TensorFlow:                  ~400MB (largest!)
+# DeepFace:                    ~5MB
+# OpenCV:                      ~90MB
+# Pillow + numpy:              ~20MB
+# 
+# TOTAL: ~600MB (including face recognition)
+# Without face recognition: ~15MB
+# 
+# ============================================================================
+# TROUBLESHOOTING:
+# ============================================================================
+# 
+# Issue: "Could not find a version that satisfies the requirement"
+# Solution: Upgrade pip first
+#   python -m pip install --upgrade pip
+# 
+# Issue: TensorFlow installation is very slow
+# Solution: Use TensorFlow CPU version (smaller, faster)
+#   pip install tensorflow-cpu==2.15.0 instead
+# 
+# Issue: "externally-managed-environment" error (Linux)
+# Solution: Use virtual environment
+#   python -m venv venv
+#   venv\Scripts\activate  (Windows)
+#   source venv/bin/activate  (Linux/Mac)
+# 
+# Issue: DeepFace download fails during first run
+# Solution: Check internet connection, models download automatically
+# 
+# Issue: OpenCV import error
+# Solution: Reinstall opencv-python
+#   pip uninstall opencv-python
+#   pip install opencv-python==4.8.1.78
+# 
+# ============================================================================
+# SYSTEM REQUIREMENTS:
+# ============================================================================
+# 
+# Minimum:
+#   - Python 3.11+
+#   - 2GB RAM
+#   - 1GB free disk space
+#   - Webcam (for face recognition)
+# 
+# Recommended:
+#   - Python 3.11+
+#   - 4GB RAM
+#   - 2GB free disk space
+#   - Good lighting for webcam
+# 
+# ============================================================================

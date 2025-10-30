@@ -1,0 +1,268 @@
+<!-- =========================================================================
+     QUANTUM-SAFE E-VOTING SYSTEM - LOGIN PAGE
+     =========================================================================
+     File: templates/login.html
+     Purpose: User login form with optional face verification
+     ========================================================================= -->
+{% extends "base.html" %}
+
+{% block title %}Login - Quantum-Safe Voting{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-5 col-lg-4 mx-auto">
+        <!-- Login Card -->
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">
+                    <i class="bi bi-box-arrow-in-right"></i> Voter Login
+                </h4>
+            </div>
+            <div class="card-body p-4">
+                <p class="text-muted mb-4">
+                    Welcome back! Login to cast your vote.
+                </p>
+                
+                <!-- Login Tabs -->
+                <ul class="nav nav-tabs mb-3" id="loginTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="password-tab" data-bs-toggle="tab" data-bs-target="#password-login" type="button">
+                            <i class="bi bi-lock"></i> Password
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="face-tab" data-bs-toggle="tab" data-bs-target="#face-login" type="button">
+                            <i class="bi bi-camera"></i> Face
+                        </button>
+                    </li>
+                </ul>
+                
+                <div class="tab-content" id="loginTabContent">
+                    <!-- Password Login Tab -->
+                    <div class="tab-pane fade show active" id="password-login" role="tabpanel">
+                        <form method="POST" action="{{ url_for('login') }}">
+                            <!-- Username Field -->
+                            <div class="mb-3">
+                                <label for="username" class="form-label">
+                                    <i class="bi bi-person"></i> Username
+                                </label>
+                                <input 
+                                    type="text" 
+                                    class="form-control form-control-lg" 
+                                    id="username" 
+                                    name="username" 
+                                    placeholder="Enter your username"
+                                    required
+                                    autofocus>
+                            </div>
+                            
+                            <!-- Password Field -->
+                            <div class="mb-3">
+                                <label for="password" class="form-label">
+                                    <i class="bi bi-lock"></i> Password
+                                </label>
+                                <input 
+                                    type="password" 
+                                    class="form-control form-control-lg" 
+                                    id="password" 
+                                    name="password" 
+                                    placeholder="Enter your password"
+                                    required>
+                            </div>
+                            
+                            <!-- Remember Me -->
+                            <div class="mb-3 form-check">
+                                <input 
+                                    type="checkbox" 
+                                    class="form-check-input" 
+                                    id="rememberMe">
+                                <label class="form-check-label" for="rememberMe">
+                                    Remember me
+                                </label>
+                            </div>
+                            
+                            <!-- Submit Button -->
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="bi bi-check-circle"></i> Login
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- Face Login Tab -->
+                    <div class="tab-pane fade" id="face-login" role="tabpanel">
+                        <div class="alert alert-info small">
+                            <i class="bi bi-info-circle"></i>
+                            Login using facial recognition (quantum-safe encrypted)
+                        </div>
+                        
+                        <!-- Username for Face Login -->
+                        <div class="mb-3">
+                            <label for="face-username" class="form-label">
+                                <i class="bi bi-person"></i> Username
+                            </label>
+                            <input 
+                                type="text" 
+                                class="form-control" 
+                                id="face-username" 
+                                placeholder="Enter your username"
+                                required>
+                        </div>
+                        
+                        <!-- Webcam Section -->
+                        <div class="text-center mb-3">
+                            <div id="faceLoginCamera">
+                                <video id="loginFaceVideo" width="280" height="210" autoplay style="border-radius: 10px; border: 3px solid #2563eb;"></video>
+                                <canvas id="loginFaceCanvas" style="display: none;"></canvas>
+                                
+                                <div class="mt-3">
+                                    <button type="button" class="btn btn-primary" id="startFaceLoginBtn">
+                                        <i class="bi bi-camera-video"></i> Start Camera
+                                    </button>
+                                    <button type="button" class="btn btn-success" id="captureFaceLoginBtn" style="display: none;">
+                                        <i class="bi bi-camera"></i> Capture & Verify
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Loading Spinner -->
+                            <div id="faceLoginSpinner" style="display: none;">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Verifying...</span>
+                                </div>
+                                <p class="mt-2">Verifying your face...</p>
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-light small">
+                            <strong>Tips:</strong> Ensure good lighting and look directly at camera
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer text-center bg-light">
+                <p class="mb-2">
+                    Don't have an account? 
+                    <a href="{{ url_for('register') }}" class="text-decoration-none">
+                        Register here
+                    </a>
+                </p>
+                <p class="mb-0 small">
+                    <a href="{{ url_for('admin_login') }}" class="text-muted text-decoration-none">
+                        <i class="bi bi-shield-lock"></i> Admin Login
+                    </a>
+                </p>
+            </div>
+        </div>
+        
+        <!-- Quick Links -->
+        <div class="text-center mt-3">
+            <a href="{{ url_for('verify') }}" class="btn btn-outline-secondary">
+                <i class="bi bi-search"></i> Verify Your Vote
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// ============================================================================
+// FACE LOGIN FUNCTIONALITY
+// ============================================================================
+
+let faceLoginStream = null;
+
+// Start camera button
+document.getElementById('startFaceLoginBtn').addEventListener('click', function() {
+    const username = document.getElementById('face-username').value;
+    
+    if (!username) {
+        alert('Please enter your username first');
+        return;
+    }
+    
+    const video = document.getElementById('loginFaceVideo');
+    
+    // Request webcam access
+    navigator.mediaDevices.getUserMedia({ video: true })
+        .then(function(stream) {
+            faceLoginStream = stream;
+            video.srcObject = stream;
+            
+            // Show capture button, hide start button
+            document.getElementById('startFaceLoginBtn').style.display = 'none';
+            document.getElementById('captureFaceLoginBtn').style.display = 'inline-block';
+        })
+        .catch(function(error) {
+            console.error('Webcam error:', error);
+            alert('Could not access webcam. Please check permissions.');
+        });
+});
+
+// Capture and verify face
+document.getElementById('captureFaceLoginBtn').addEventListener('click', function() {
+    const username = document.getElementById('face-username').value;
+    const video = document.getElementById('loginFaceVideo');
+    const canvas = document.getElementById('loginFaceCanvas');
+    
+    // Set canvas size
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    
+    // Draw video frame to canvas
+    const context = canvas.getContext('2d');
+    context.drawImage(video, 0, 0);
+    
+    // Get image data
+    const imageData = canvas.toDataURL('image/jpeg', 0.95);
+    
+    // Stop video stream
+    if (faceLoginStream) {
+        faceLoginStream.getTracks().forEach(track => track.stop());
+    }
+    
+    // Show loading
+    document.getElementById('faceLoginCamera').style.display = 'none';
+    document.getElementById('faceLoginSpinner').style.display = 'block';
+    
+    // Send to backend for verification
+    fetch('/verify_face', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            username: username,
+            image: imageData
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(`✓ Face verified!\n\nSimilarity: ${data.similarity}%\n\nRedirecting...`);
+            window.location.href = '/vote';
+        } else {
+            alert(`✗ Face verification failed:\n${data.message}\n\nSimilarity: ${data.similarity}%`);
+            
+            // Reset camera
+            document.getElementById('faceLoginSpinner').style.display = 'none';
+            document.getElementById('faceLoginCamera').style.display = 'block';
+            document.getElementById('startFaceLoginBtn').style.display = 'inline-block';
+            document.getElementById('captureFaceLoginBtn').style.display = 'none';
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error verifying face. Please try again or use password login.');
+        
+        // Reset camera
+        document.getElementById('faceLoginSpinner').style.display = 'none';
+        document.getElementById('faceLoginCamera').style.display = 'block';
+        document.getElementById('startFaceLoginBtn').style.display = 'inline-block';
+        document.getElementById('captureFaceLoginBtn').style.display = 'none';
+    });
+});
+</script>
+{% endblock %}

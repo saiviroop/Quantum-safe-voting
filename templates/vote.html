@@ -1,0 +1,321 @@
+<!-- =========================================================================
+     QUANTUM-SAFE E-VOTING SYSTEM - VOTING PAGE
+     =========================================================================
+     File: templates/vote.html
+     Purpose: Display candidates and allow users to cast their vote
+     ========================================================================= -->
+{% extends "base.html" %}
+
+{% block title %}Cast Your Vote - Quantum-Safe Voting{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <!-- Page Header -->
+        <div class="text-center mb-4">
+            <h2 class="display-5 fw-bold text-primary">
+                <i class="bi bi-check-circle-fill"></i> Cast Your Vote
+            </h2>
+            <p class="lead text-muted">
+                Select your candidate and submit your encrypted vote
+            </p>
+        </div>
+        
+        <!-- Important Notice -->
+        <div class="alert alert-warning">
+            <h5 class="alert-heading">
+                <i class="bi bi-exclamation-triangle-fill"></i> Important
+            </h5>
+            <ul class="mb-0">
+                <li><strong>You can only vote once</strong> - choose carefully!</li>
+                <li>Your vote will be <strong>encrypted</strong> and <strong>anonymous</strong></li>
+                <li>You will receive a <strong>receipt code</strong> to verify your vote</li>
+                <li>Save your receipt code - you cannot retrieve it later!</li>
+                {% if face_registered and face_available %}
+                <li><strong>Face verification required</strong> before casting vote</li>
+                {% endif %}
+            </ul>
+        </div>
+        
+        <!-- Face Verification Section (if face registered) -->
+        {% if face_registered and face_available %}
+        <div class="card shadow mb-4" id="faceVerificationCard">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">
+                    <i class="bi bi-camera-fill"></i> Step 1: Verify Your Identity
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <i class="bi bi-shield-check"></i>
+                    <strong>Security Check:</strong> Verify your face before voting to prevent fraud.
+                </div>
+                
+                <div class="text-center">
+                    <div id="voteFaceCamera" style="display: none;">
+                        <video id="voteFaceVideo" width="320" height="240" autoplay style="border-radius: 10px; border: 3px solid #10b981;"></video>
+                        <canvas id="voteFaceCanvas" style="display: none;"></canvas>
+                        
+                        <div class="mt-3">
+                            <button type="button" class="btn btn-success" id="captureVoteFaceBtn">
+                                <i class="bi bi-camera"></i> Capture & Verify Face
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="voteFaceStart">
+                        <i class="bi bi-camera-video" style="font-size: 4rem; color: #10b981;"></i>
+                        <p class="mt-3">Click below to start face verification</p>
+                        <button type="button" class="btn btn-success btn-lg" id="startVoteFaceBtn">
+                            <i class="bi bi-camera-video"></i> Start Face Verification
+                        </button>
+                    </div>
+                    
+                    <div id="voteFaceVerifying" style="display: none;">
+                        <div class="spinner-border text-success" role="status">
+                            <span class="visually-hidden">Verifying...</span>
+                        </div>
+                        <p class="mt-2">Verifying your face...</p>
+                    </div>
+                    
+                    <div id="voteFaceVerified" style="display: none;">
+                        <i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i>
+                        <h5 class="text-success mt-3">Face Verified!</h5>
+                        <p class="text-muted">You can now select a candidate and vote</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Voting Form -->
+        <div class="card shadow" id="votingFormCard" {% if face_registered and face_available %}style="opacity: 0.5; pointer-events: none;"{% endif %}>
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    <i class="bi bi-person-lines-fill"></i> Select a Candidate
+                </h5>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST" action="{{ url_for('cast_vote') }}" id="voteForm">
+                    <!-- Candidates List -->
+                    <div class="candidates-list">
+                        {% for candidate in candidates %}
+                        <div class="candidate-card mb-3">
+                            <input 
+                                type="radio" 
+                                class="btn-check" 
+                                name="candidate_id" 
+                                id="candidate{{ candidate.id }}" 
+                                value="{{ candidate.id }}"
+                                required>
+                            <label class="candidate-label" for="candidate{{ candidate.id }}">
+                                <div class="d-flex align-items-center">
+                                    <div class="candidate-avatar">
+                                        <i class="bi bi-person-circle"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <h5 class="candidate-name mb-1">
+                                            {{ candidate.name }}
+                                        </h5>
+                                        <p class="candidate-party mb-0">
+                                            <i class="bi bi-flag"></i> {{ candidate.party }}
+                                        </p>
+                                        {% if candidate.description %}
+                                        <p class="candidate-description text-muted small mt-2 mb-0">
+                                            {{ candidate.description }}
+                                        </p>
+                                        {% endif %}
+                                    </div>
+                                    <div class="check-icon">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <!-- Confirmation Checkbox -->
+                    <div class="mt-4">
+                        <div class="form-check">
+                            <input 
+                                class="form-check-input" 
+                                type="checkbox" 
+                                id="confirmVote" 
+                                required>
+                            <label class="form-check-label" for="confirmVote">
+                                <strong>I confirm my selection and understand this is final</strong>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- Submit Button -->
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-success btn-lg" id="submitVote">
+                            <i class="bi bi-lock-fill"></i> Encrypt & Submit Vote
+                        </button>
+                        <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-circle"></i> Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Security Information -->
+        <div class="card mt-4 bg-light">
+            <div class="card-body">
+                <h6 class="card-title">
+                    <i class="bi bi-shield-check"></i> How Your Vote is Protected
+                </h6>
+                <div class="row">
+                    <div class="col-md-6">
+                        <ul class="small mb-0">
+                            <li><strong>Encrypted:</strong> Kyber-512 quantum-safe encryption</li>
+                            <li><strong>Signed:</strong> Dilithium-2 digital signature</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <ul class="small mb-0">
+                            <li><strong>Anonymous:</strong> No link to your identity</li>
+                            <li><strong>Verifiable:</strong> Receipt code for verification</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Form submission confirmation
+document.getElementById('voteForm').addEventListener('submit', function(e) {
+    // Get selected candidate name
+    const selectedRadio = document.querySelector('input[name="candidate_id"]:checked');
+    if (!selectedRadio) {
+        e.preventDefault();
+        alert('Please select a candidate');
+        return false;
+    }
+    
+    const selectedLabel = document.querySelector(`label[for="${selectedRadio.id}"]`);
+    const candidateName = selectedLabel.querySelector('.candidate-name').textContent.trim();
+    
+    // Confirm submission
+    const confirmed = confirm(
+        `Are you sure you want to vote for:\n\n${candidateName}\n\n` +
+        `This action cannot be undone!`
+    );
+    
+    if (!confirmed) {
+        e.preventDefault();
+        return false;
+    }
+    
+    // Show loading state
+    const submitBtn = document.getElementById('submitVote');
+    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Encrypting vote...';
+    submitBtn.disabled = true;
+    
+    return true;
+});
+
+// ============================================================================
+// FACE VERIFICATION FOR VOTING
+// ============================================================================
+
+{% if face_registered and face_available %}
+let voteFaceStream = null;
+
+// Start face verification
+document.getElementById('startVoteFaceBtn').addEventListener('click', function() {
+    const video = document.getElementById('voteFaceVideo');
+    
+    // Request webcam
+    navigator.mediaDevices.getUserMedia({ video: true })
+        .then(function(stream) {
+            voteFaceStream = stream;
+            video.srcObject = stream;
+            
+            // Show camera section
+            document.getElementById('voteFaceStart').style.display = 'none';
+            document.getElementById('voteFaceCamera').style.display = 'block';
+        })
+        .catch(function(error) {
+            console.error('Webcam error:', error);
+            alert('Could not access webcam. Please check permissions.');
+        });
+});
+
+// Capture and verify face
+document.getElementById('captureVoteFaceBtn').addEventListener('click', function() {
+    const video = document.getElementById('voteFaceVideo');
+    const canvas = document.getElementById('voteFaceCanvas');
+    
+    // Set canvas size
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    
+    // Draw video frame
+    const context = canvas.getContext('2d');
+    context.drawImage(video, 0, 0);
+    
+    // Get image data
+    const imageData = canvas.toDataURL('image/jpeg', 0.95);
+    
+    // Stop stream
+    if (voteFaceStream) {
+        voteFaceStream.getTracks().forEach(track => track.stop());
+    }
+    
+    // Show verifying
+    document.getElementById('voteFaceCamera').style.display = 'none';
+    document.getElementById('voteFaceVerifying').style.display = 'block';
+    
+    // Send to backend
+    fetch('/verify_face_for_vote', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ image: imageData })
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('voteFaceVerifying').style.display = 'none';
+        
+        if (data.success) {
+            // Show verified
+            document.getElementById('voteFaceVerified').style.display = 'block';
+            
+            // Enable voting form
+            document.getElementById('votingFormCard').style.opacity = '1';
+            document.getElementById('votingFormCard').style.pointerEvents = 'auto';
+            
+            // Scroll to voting form
+            setTimeout(function() {
+                document.getElementById('votingFormCard').scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'start' 
+                });
+            }, 1000);
+        } else {
+            alert(`✗ Face verification failed:\n${data.message}\n\nSimilarity: ${data.similarity}%\n\nPlease try again.`);
+            
+            // Reset
+            document.getElementById('voteFaceStart').style.display = 'block';
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error verifying face. Please try again.');
+        
+        document.getElementById('voteFaceVerifying').style.display = 'none';
+        document.getElementById('voteFaceStart').style.display = 'block';
+    });
+});
+{% endif %}
+</script>
+{% endblock %}

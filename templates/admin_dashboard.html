@@ -1,0 +1,290 @@
+<!-- =========================================================================
+     QUANTUM-SAFE E-VOTING SYSTEM - ADMIN DASHBOARD
+     =========================================================================
+     File: templates/admin_dashboard.html
+     Purpose: Admin panel for managing candidates, voting, and tallying
+     ========================================================================= -->
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Quantum-Safe Voting{% endblock %}
+
+{% block content %}
+<!-- Dashboard Header -->
+<div class="row mb-4">
+    <div class="col">
+        <h2 class="display-6 fw-bold text-primary">
+            <i class="bi bi-speedometer2"></i> Admin Dashboard
+        </h2>
+        <p class="lead text-muted">Manage election and view results</p>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="stat-card bg-primary text-white">
+            <div class="stat-icon">
+                <i class="bi bi-people-fill"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ stats.total_users }}</h3>
+                <p class="mb-0">Registered Voters</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card bg-success text-white">
+            <div class="stat-icon">
+                <i class="bi bi-check-circle-fill"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ stats.total_votes }}</h3>
+                <p class="mb-0">Votes Cast</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card bg-info text-white">
+            <div class="stat-icon">
+                <i class="bi bi-person-lines-fill"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ stats.total_candidates }}</h3>
+                <p class="mb-0">Candidates</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card bg-warning text-white">
+            <div class="stat-icon">
+                <i class="bi bi-graph-up"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ "%.1f"|format(stats.participation_rate) }}%</h3>
+                <p class="mb-0">Participation Rate</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Voting Status Control -->
+<div class="row mb-4">
+    <div class="col-lg-6">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    <i class="bi bi-toggle-on"></i> Voting Status
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if stats.is_voting_open %}
+                    <div class="alert alert-success">
+                        <h6 class="alert-heading">
+                            <i class="bi bi-unlock-fill"></i> Voting is Currently OPEN
+                        </h6>
+                        <p class="mb-0 small">Users can cast their votes</p>
+                    </div>
+                    <form method="POST" action="{{ url_for('close_voting') }}" 
+                          onsubmit="return confirm('Close voting? No more votes can be cast!');">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bi bi-lock-fill"></i> Close Voting
+                        </button>
+                    </form>
+                {% else %}
+                    <div class="alert alert-danger">
+                        <h6 class="alert-heading">
+                            <i class="bi bi-lock-fill"></i> Voting is Currently CLOSED
+                        </h6>
+                        <p class="mb-0 small">No votes can be cast</p>
+                    </div>
+                    <form method="POST" action="{{ url_for('open_voting') }}"
+                          onsubmit="return confirm('Reopen voting?');">
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-unlock-fill"></i> Open Voting
+                        </button>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Tally Votes Section -->
+    <div class="col-lg-6">
+        <div class="card shadow">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">
+                    <i class="bi bi-calculator"></i> Tally Results
+                </h5>
+            </div>
+            <div class="card-body">
+                <p class="mb-3">
+                    Decrypt all votes and count results using Kyber-512 private key.
+                </p>
+                <form method="POST" action="{{ url_for('tally_votes') }}"
+                      onsubmit="return confirm('Decrypt and tally all votes?');">
+                    <button type="submit" class="btn btn-success btn-lg w-100">
+                        <i class="bi bi-lock-fill"></i> Decrypt & Tally Votes
+                    </button>
+                </form>
+                <p class="small text-muted mt-2 mb-0">
+                    This will decrypt all encrypted votes and display results
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Results Section (Shown after tallying) -->
+{% if show_results %}
+<div class="row mb-4">
+    <div class="col">
+        <div class="card shadow border-success">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">
+                    <i class="bi bi-trophy-fill"></i> Election Results
+                </h5>
+            </div>
+            <div class="card-body">
+                <p class="lead">Total Votes: <strong>{{ total_votes }}</strong></p>
+                
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Candidate</th>
+                                <th>Party</th>
+                                <th>Votes</th>
+                                <th>Percentage</th>
+                                <th>Bar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for result in results %}
+                            <tr>
+                                <td>
+                                    {% if loop.index == 1 %}
+                                        <i class="bi bi-trophy-fill text-warning"></i> {{ loop.index }}
+                                    {% else %}
+                                        {{ loop.index }}
+                                    {% endif %}
+                                </td>
+                                <td><strong>{{ result.name }}</strong></td>
+                                <td>{{ result.party }}</td>
+                                <td><strong>{{ result.votes }}</strong></td>
+                                <td>{{ result.percentage }}%</td>
+                                <td>
+                                    <div class="progress" style="height: 25px;">
+                                        <div class="progress-bar 
+                                            {% if loop.index == 1 %}bg-success{% else %}bg-primary{% endif %}" 
+                                            role="progressbar" 
+                                            style="width: {{ result.percentage }}%"
+                                            aria-valuenow="{{ result.percentage }}" 
+                                            aria-valuemin="0" 
+                                            aria-valuemax="100">
+                                            {{ result.percentage }}%
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Candidate Management -->
+<div class="row mb-4">
+    <div class="col">
+        <div class="card shadow">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">
+                    <i class="bi bi-person-lines-fill"></i> Candidate Management
+                </h5>
+            </div>
+            <div class="card-body">
+                <!-- Add Candidate Form -->
+                <div class="mb-4">
+                    <h6>Add New Candidate</h6>
+                    <form method="POST" action="{{ url_for('add_candidate') }}" class="row g-3">
+                        <div class="col-md-4">
+                            <input 
+                                type="text" 
+                                class="form-control" 
+                                name="name" 
+                                placeholder="Candidate Name"
+                                required>
+                        </div>
+                        <div class="col-md-3">
+                            <input 
+                                type="text" 
+                                class="form-control" 
+                                name="party" 
+                                placeholder="Party"
+                                required>
+                        </div>
+                        <div class="col-md-3">
+                            <input 
+                                type="text" 
+                                class="form-control" 
+                                name="description" 
+                                placeholder="Description (optional)">
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-info w-100">
+                                <i class="bi bi-plus-circle"></i> Add
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Current Candidates List -->
+                <h6>Current Candidates</h6>
+                {% if candidates %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Party</th>
+                                <th>Description</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for candidate in candidates %}
+                            <tr>
+                                <td>{{ candidate.id }}</td>
+                                <td><strong>{{ candidate.name }}</strong></td>
+                                <td>{{ candidate.party }}</td>
+                                <td>{{ candidate.description or '-' }}</td>
+                                <td>
+                                    <form method="POST" 
+                                          action="{{ url_for('delete_candidate', candidate_id=candidate.id) }}"
+                                          style="display: inline;"
+                                          onsubmit="return confirm('Delete {{ candidate.name }}?');">
+                                        <button type="submit" class="btn btn-sm btn-danger">
+                                            <i class="bi bi-trash"></i> Delete
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="alert alert-warning">
+                    <i class="bi bi-exclamation-triangle"></i> No candidates added yet
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

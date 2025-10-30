@@ -1,0 +1,131 @@
+# ============================================================================
+# QUANTUM-SAFE E-VOTING SYSTEM - GIT IGNORE FILE
+# ============================================================================
+# File: .gitignore
+# Purpose: Specify files and directories that should NOT be committed to Git
+# ============================================================================
+
+# CRITICAL: Cryptographic Secret Keys (NEVER COMMIT THESE!)
+# ===========================================================
+keys/*_secret.key
+keys/kyber_secret.key
+keys/dilithium_secret.key
+
+# Database Files (Contains sensitive user data)
+# ==============================================
+*.db
+*.sqlite
+*.sqlite3
+instance/
+instance/*.db
+
+# Python Cache and Compiled Files
+# ================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual Environments
+# ====================
+venv/
+env/
+ENV/
+.venv
+
+# IDE and Editor Files
+# ====================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Flask
+# =====
+instance/
+.webassets-cache
+.env
+.flaskenv
+
+# Logs
+# ====
+*.log
+logs/
+
+# OS Generated Files
+# ==================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Distribution / Packaging
+# =========================
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Testing
+# =======
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# Backup Files
+# ============
+*.bak
+*.backup
+*~
+
+# Temporary Files
+# ===============
+*.tmp
+temp/
+tmp/
+
+# Documentation Build
+# ===================
+docs/_build/
+
+# ============================================================================
+# NOTES:
+# ============================================================================
+# 
+# What IS safe to commit:
+# - Source code (.py files)
+# - Templates (.html files)
+# - Static assets (CSS, JS, images)
+# - Public keys (encryption_public.key, signing_public.key)
+# - Requirements.txt
+# - README.md
+# - Configuration templates
+#
+# What should NEVER be committed:
+# - Secret/private keys
+# - Database files
+# - User data
+# - Session secrets
+# - API keys
+# - Passwords
+#
+# ============================================================================
